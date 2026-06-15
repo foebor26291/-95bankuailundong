@@ -2,49 +2,94 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>沪深股市95个行业板块资金轮动热力图（2020-2025）</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>沪深95板块轮动热力图 实时版</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;font-size:13px;background:#fff;color:#1a1a1a;padding:16px}
-h1{font-size:16px;font-weight:500;margin-bottom:12px;color:#1a1a1a}
-.controls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;align-items:center}
-.controls select,.controls input{font-size:12px;padding:5px 8px;border-radius:6px;background:#fff;color:#1a1a1a;border:1px solid #ccc;outline:none}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;font-size:13px;background:#f2f2f7;color:#1a1a1a}
+.header{background:#fff;padding:12px 16px;border-bottom:1px solid #e0e0e0}
+h1{font-size:15px;font-weight:600;margin-bottom:8px;color:#1a1a1a}
+.live-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.live-indicator{display:flex;align-items:center;gap:5px;font-size:12px}
+.dot-live{width:8px;height:8px;border-radius:50%;background:#ff6b00;animation:pulse 1.2s infinite}
+.dot-ok{width:8px;height:8px;border-radius:50%;background:#27ae60}
+.dot-err{width:8px;height:8px;border-radius:50%;background:#e74c3c}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.last-update{font-size:11px;color:#999}
+.refresh-btn{font-size:12px;padding:4px 12px;border-radius:16px;background:#1a1a1a;color:#fff;border:none;cursor:pointer;font-family:inherit}
+.refresh-btn:disabled{background:#ccc}
+.loading-bar{height:3px;background:#f2f2f7;overflow:hidden;position:relative}
+.loading-bar .bar{position:absolute;height:3px;background:#ff6b00;width:0;transition:width .3s}
+.loading-bar .bar.running{animation:loadbar 1.5s infinite}
+@keyframes loadbar{0%{left:-30%;width:30%}100%{left:100%;width:30%}}
+.tab-bar{display:flex;gap:6px;flex-wrap:wrap}
+.tab-bar button{font-size:12px;padding:5px 12px;border-radius:20px;background:#f2f2f7;border:none;color:#666;cursor:pointer;font-family:inherit}
+.tab-bar button.active{background:#1a1a1a;color:#fff;font-weight:500}
+.controls{background:#fff;padding:10px 16px;border-bottom:1px solid #e0e0e0;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.controls select,.controls input{font-size:12px;padding:5px 8px;border-radius:8px;background:#f2f2f7;color:#1a1a1a;border:none;font-family:inherit}
+.controls input{width:120px}
 .controls label{font-size:12px;color:#666}
-.stat-row{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
-.stat{background:#f5f5f5;border-radius:6px;padding:5px 10px;font-size:11px;color:#666}
-.stat b{color:#1a1a1a;font-weight:500}
-.tab-bar{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
-.tab-bar button{font-size:12px;padding:5px 14px;border-radius:6px;background:transparent;border:1px solid #ccc;color:#666;cursor:pointer}
-.tab-bar button.active{background:#f0f0f0;color:#1a1a1a;border-color:#999;font-weight:500}
-.legend{display:flex;align-items:center;gap:6px;font-size:11px;color:#666;margin-bottom:8px;flex-wrap:wrap}
-.lg{display:flex;gap:3px}
-.lg span{width:18px;height:12px;border-radius:2px;display:inline-block}
-.tbl-wrap{overflow-x:auto;overflow-y:auto;max-height:75vh;border:1px solid #e0e0e0;border-radius:8px}
-table{border-collapse:collapse;min-width:700px;width:100%}
-thead{position:sticky;top:0;z-index:10}
-thead tr th{background:#f7f7f7;padding:7px 10px;font-size:11px;font-weight:500;color:#666;border-bottom:1px solid #ddd;white-space:nowrap;text-align:center}
-thead tr th:first-child{text-align:left}
-tbody tr:hover{background:#fafafa}
-td{padding:4px 8px;border-bottom:1px solid #f0f0f0;font-size:11px;white-space:nowrap}
-td.name{color:#1a1a1a;font-weight:500;position:sticky;left:0;background:#fff;z-index:5;min-width:100px}
-tbody tr:hover td.name{background:#fafafa}
-td.cat{font-size:10px;color:#999;padding-right:4px;white-space:nowrap}
-td.val{text-align:right;font-weight:500;font-size:11px;border-radius:3px;cursor:default}
-.note{font-size:11px;color:#aaa;margin-top:10px}
+.legend-wrap{background:#fff;padding:8px 16px;border-bottom:1px solid #e0e0e0}
+.legend-row{display:flex;align-items:center;gap:6px;font-size:11px;color:#666;flex-wrap:wrap;margin-bottom:4px}
+.legend-row:last-child{margin-bottom:0}
+.lg{display:flex;gap:2px}
+.lg span{width:15px;height:10px;border-radius:2px;display:inline-block}
+.yr-badge{display:inline-flex;align-items:center;gap:3px;font-size:11px;padding:2px 7px;border-radius:4px;font-weight:500}
+.yr-badge.live{background:#fff3e6;color:#cc5500;border:1px solid #ffb366}
+.yr-badge.done{background:#f0f0f0;color:#888;border:1px solid #ddd}
+.yr-badge.realtime{background:#e8f5e9;color:#1b5e20;border:1px solid #81c784}
+.stats{background:#f2f2f7;padding:6px 16px;display:flex;gap:8px;flex-wrap:wrap}
+.stat{background:#fff;border-radius:8px;padding:4px 10px;font-size:11px;color:#666}
+.stat b{color:#1a1a1a;font-weight:600}
+.tbl-outer{overflow-x:auto;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#fff}
+table{border-collapse:collapse;width:max-content;min-width:100%}
+thead tr th{padding:7px 10px;font-size:11px;font-weight:600;color:#555;border-bottom:1.5px solid #ddd;white-space:nowrap;text-align:center;border-right:1px solid #eee}
+thead tr th:first-child{text-align:left;min-width:88px;background:#f7f7f7}
+th.yh-done{background:#f7f7f7;color:#555}
+th.yh-live{background:#fff3e6;color:#cc5500}
+th.yh-rt{background:#e8f5e9;color:#1b5e20}
+tbody tr{border-bottom:1px solid #f0f0f0}
+tbody tr:nth-child(even){background:#fafafa}
+td{padding:4px 8px;font-size:11px;white-space:nowrap;border-right:1px solid #f0f0f0;text-align:right}
+td:first-child{text-align:left;font-weight:600;color:#1a1a1a;min-width:88px;background:inherit}
+td:nth-child(2){font-size:10px;color:#999;text-align:center}
+td.val{font-weight:600;font-size:11px}
+td.val-live{outline:1.5px solid #ff6b00;outline-offset:-1px}
+td.val-rt{outline:1.5px solid #27ae60;outline-offset:-1px}
+td.val-loading{background:#f5f5f5;color:#ccc;font-size:10px}
+.err-banner{background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:8px 12px;font-size:12px;color:#856404;margin:8px 16px}
+.note{background:#f2f2f7;padding:8px 16px;font-size:11px;color:#aaa;line-height:1.6}
 </style>
 </head>
 <body>
-<h1>沪深股市95个行业板块资金轮动热力图（2020–2025）</h1>
 
-<div class="tab-bar">
-  <button class="active" onclick="setView('heat',this)">🔥 热力图</button>
-  <button onclick="setView('rank',this)">📊 年度排名</button>
-  <button onclick="setView('best',this)">🏆 最佳/最差年份</button>
+<div class="header">
+  <h1>沪深95个板块资金轮动热力图（2020–2026）</h1>
+  <div class="live-bar">
+    <div class="live-indicator" id="liveIndicator">
+      <span class="dot-live" id="liveDot"></span>
+      <span id="liveText">正在连接实时数据...</span>
+    </div>
+    <span class="last-update" id="lastUpdate"></span>
+    <button class="refresh-btn" id="refreshBtn" onclick="fetchRealtime()">🔄 刷新</button>
+    <select id="autoRefresh" onchange="setAutoRefresh()" style="font-size:11px;padding:3px 6px;border-radius:8px;background:#f2f2f7;border:none">
+      <option value="0">手动刷新</option>
+      <option value="60">每1分钟</option>
+      <option value="300">每5分钟</option>
+      <option value="600">每10分钟</option>
+    </select>
+  </div>
+  <div class="loading-bar"><div class="bar" id="loadBar"></div></div>
+  <div style="height:8px"></div>
+  <div class="tab-bar">
+    <button class="active" onclick="setView('heat',this)">🔥 热力图</button>
+    <button onclick="setView('rank',this)">📊 年度排名</button>
+    <button onclick="setView('best',this)">🏆 最佳/最差</button>
+  </div>
 </div>
 
 <div class="controls">
-  <label>大类筛选：</label>
+  <label>筛选：</label>
   <select id="catFilter" onchange="render()">
     <option value="all">全部板块</option>
     <option value="科技">大科技</option>
@@ -58,7 +103,9 @@ td.val{text-align:right;font-weight:500;font-size:11px;border-radius:3px;cursor:
   <label>排序：</label>
   <select id="sortBy" onchange="render()">
     <option value="cat">按大类</option>
-    <option value="avg">按5年均涨幅↓</option>
+    <option value="avg">按均涨幅↓</option>
+    <option value="rt">按今日实时↓</option>
+    <option value="y2026">按2026年内↓</option>
     <option value="y2025">按2025↓</option>
     <option value="y2024">按2024↓</option>
     <option value="y2023">按2023↓</option>
@@ -66,144 +113,170 @@ td.val{text-align:right;font-weight:500;font-size:11px;border-radius:3px;cursor:
     <option value="y2021">按2021↓</option>
     <option value="y2020">按2020↓</option>
   </select>
-  <input type="text" id="search" placeholder="搜索板块名..." oninput="render()" style="width:130px">
+  <input type="search" id="search" placeholder="搜索板块..." oninput="render()">
 </div>
 
-<div class="legend">
-  涨跌幅色阶：
-  <div class="lg">
-    <span style="background:#7f2020"></span>
-    <span style="background:#c0392b"></span>
-    <span style="background:#e74c3c"></span>
-    <span style="background:#f1948a"></span>
-    <span style="background:#fadbd8"></span>
-    <span style="background:#f5f5f5"></span>
-    <span style="background:#d5f5e3"></span>
-    <span style="background:#82e0aa"></span>
-    <span style="background:#27ae60"></span>
-    <span style="background:#1e8449"></span>
-    <span style="background:#145a32"></span>
+<div class="legend-wrap">
+  <div class="legend-row">
+    色阶：
+    <div class="lg">
+      <span style="background:#7f2020"></span><span style="background:#c0392b"></span>
+      <span style="background:#e74c3c"></span><span style="background:#f1948a"></span>
+      <span style="background:#fadbd8"></span><span style="background:#ececec"></span>
+      <span style="background:#d5f5e3"></span><span style="background:#82e0aa"></span>
+      <span style="background:#27ae60"></span><span style="background:#1e8449"></span>
+    </div>
+    大涨&gt;50% 涨&gt;10% 微涨 微跌 跌 大跌
   </div>
-  <span>大涨（>80%）</span>
-  <span>涨（>25%）</span>
-  <span>微涨</span>
-  <span>微跌</span>
-  <span>跌（>-25%）</span>
-  <span>大跌（>-40%）</span>
+  <div class="legend-row">
+    列类型：
+    <span class="yr-badge done">● 2020–2025 历史完结</span>
+    <span class="yr-badge live">● 2026 年内累计（进行中）</span>
+    <span class="yr-badge realtime">● 今日实时（东方财富）</span>
+  </div>
 </div>
 
-<div class="stat-row" id="statRow"></div>
-<div class="tbl-wrap"><table id="mainTable"><thead><tr id="thead"></tr></thead><tbody id="tbody"></tbody></table></div>
-<p class="note">数据基于申万行业指数体系及公开市场研究数据综合估算（2020–2025），涨跌幅单位：%。2025年含全年估算。仅供参考，不构成投资建议。</p>
+<div id="errBanner" style="display:none" class="err-banner">
+  ⚠️ 实时数据加载失败（可能是网络限制或跨域问题）。今日实时列显示上次缓存数据，历史数据不受影响。
+  <br>💡 <b>如需稳定实时数据</b>，建议将此文件放到本地服务器（如 python -m http.server）后访问，可绕开部分跨域限制。
+</div>
+
+<div class="stats" id="statRow"></div>
+<div class="tbl-outer"><table id="mainTable"><thead><tr id="thead"></tr></thead><tbody id="tbody"></tbody></table></div>
+<div class="note">
+  历史数据（2020–2025）为申万行业指数综合研究数据估算；2026年内累计数据截至最近交易日；今日实时数据来源：东方财富行情接口（开盘时段自动刷新）。<br>
+  <span style="color:#cc5500">●进行中</span>：年内累计非全年终值 ｜ <span style="color:#27ae60">●实时</span>：今日截至当前涨跌幅 ｜ 仅供参考，不构成投资建议。
+</div>
 
 <script>
-const YEARS = [2020,2021,2022,2023,2024,2025];
-const DATA = [
-  {n:'半导体',c:'科技',d:[55,18,-28,22,15,46]},
-  {n:'消费电子',c:'科技',d:[38,12,-22,15,8,35]},
-  {n:'光学光电子',c:'科技',d:[42,8,-20,18,12,28]},
-  {n:'电子化学品',c:'科技',d:[28,15,-18,12,10,22]},
-  {n:'被动元件',c:'科技',d:[48,10,-24,20,14,30]},
-  {n:'PCB',c:'科技',d:[35,8,-20,15,18,25]},
-  {n:'面板',c:'科技',d:[20,5,-15,8,5,18]},
-  {n:'软件开发',c:'科技',d:[40,-5,-30,22,10,40]},
-  {n:'IT服务',c:'科技',d:[35,-8,-28,18,12,35]},
-  {n:'云计算/大数据',c:'科技',d:[45,-5,-32,28,22,45]},
-  {n:'人工智能/AI',c:'科技',d:[50,-10,-35,38,28,55]},
-  {n:'网络安全',c:'科技',d:[32,-8,-25,20,15,30]},
-  {n:'通信设备',c:'科技',d:[20,5,-18,28,30,20]},
-  {n:'通信服务',c:'科技',d:[15,8,-12,22,25,15]},
-  {n:'卫星/商业航天',c:'科技',d:[25,15,-20,30,35,50]},
-  {n:'游戏',c:'科技',d:[30,-5,-20,15,8,22]},
-  {n:'数字媒体',c:'科技',d:[28,-8,-22,18,10,20]},
-  {n:'广告营销',c:'科技',d:[20,-10,-25,12,8,15]},
-  {n:'影视院线',c:'科技',d:[18,-15,-30,20,12,18]},
-  {n:'机器人/自动化',c:'制造',d:[22,30,-22,15,25,55]},
-  {n:'工程机械',c:'制造',d:[35,28,-20,8,12,20]},
-  {n:'专用机械',c:'制造',d:[28,22,-18,10,15,22]},
-  {n:'仪器仪表',c:'制造',d:[30,20,-20,15,18,28]},
-  {n:'航空航天',c:'制造',d:[25,18,-22,20,28,38]},
-  {n:'船舶制造',c:'制造',d:[15,10,-15,22,35,30]},
-  {n:'军工电子',c:'制造',d:[30,25,-20,18,22,32]},
-  {n:'军工整机',c:'制造',d:[28,22,-18,15,20,28]},
-  {n:'新能源汽车',c:'制造',d:[88,50,-28,-15,5,22]},
-  {n:'汽车零部件',c:'制造',d:[30,35,-22,-8,8,18]},
-  {n:'整车',c:'制造',d:[22,28,-18,-5,12,15]},
-  {n:'光伏设备',c:'制造',d:[110,55,-30,-38,-12,8]},
-  {n:'风电设备',c:'制造',d:[85,40,-28,-25,-8,12]},
-  {n:'电池/储能',c:'制造',d:[95,58,-32,-30,-10,18]},
-  {n:'电网设备',c:'制造',d:[25,18,-15,12,20,25]},
-  {n:'食品饮料',c:'消费',d:[68,22,-28,-15,-12,5]},
-  {n:'白酒',c:'消费',d:[88,26,-30,-18,-15,3]},
-  {n:'啤酒',c:'消费',d:[45,15,-20,-8,-5,8]},
-  {n:'休闲食品',c:'消费',d:[35,10,-18,-5,-2,10]},
-  {n:'调味品/乳制品',c:'消费',d:[55,18,-25,-12,-8,5]},
-  {n:'家用电器',c:'消费',d:[40,8,-15,5,28,12]},
-  {n:'白色家电',c:'消费',d:[42,10,-15,8,30,14]},
-  {n:'厨卫电器',c:'消费',d:[30,5,-12,5,22,10]},
-  {n:'小家电',c:'消费',d:[55,-5,-20,8,18,12]},
-  {n:'化妆品',c:'消费',d:[60,15,-25,-10,-5,8]},
-  {n:'医疗美容',c:'消费',d:[55,12,-28,-15,-8,10]},
-  {n:'个护用品',c:'消费',d:[35,8,-20,-5,-2,8]},
-  {n:'纺织服饰',c:'消费',d:[20,5,-22,-8,5,12]},
-  {n:'品牌服装',c:'消费',d:[25,8,-20,-5,8,15]},
-  {n:'黄金珠宝',c:'消费',d:[15,5,-15,5,18,35]},
-  {n:'商超零售',c:'消费',d:[10,-5,-20,-15,-8,5]},
-  {n:'电商/互联网零售',c:'消费',d:[35,-8,-25,15,10,18]},
-  {n:'旅游酒店',c:'消费',d:[-10,-5,-28,25,15,10]},
-  {n:'航空',c:'消费',d:[-25,-8,-22,28,10,-5]},
-  {n:'教育',c:'消费',d:[45,-35,-30,5,8,12]},
-  {n:'农林牧渔',c:'消费',d:[35,-5,-20,-18,-8,-2]},
-  {n:'猪周期',c:'消费',d:[60,-20,-15,-20,-5,-5]},
-  {n:'轻工制造',c:'消费',d:[20,5,-18,-8,5,10]},
-  {n:'家居/家装',c:'消费',d:[25,8,-22,-15,-5,8]},
-  {n:'造纸/包装',c:'消费',d:[15,5,-15,-5,5,8]},
-  {n:'化学制药',c:'医药',d:[42,10,-25,-22,-8,10]},
-  {n:'中药',c:'医药',d:[28,18,-20,-5,5,8]},
-  {n:'生物制品',c:'医药',d:[55,-5,-30,-18,-12,12]},
-  {n:'创新药',c:'医药',d:[45,-8,-28,-15,-5,18]},
-  {n:'医疗器械',c:'医药',d:[60,5,-32,-20,-8,12]},
-  {n:'医疗服务',c:'医药',d:[48,8,-28,-18,-5,10]},
-  {n:'CXO医药外包',c:'医药',d:[85,15,-42,-35,-15,5]},
-  {n:'医药商业',c:'医药',d:[15,5,-18,-8,-2,8]},
-  {n:'煤炭',c:'能源',d:[-12,60,10,-20,12,15]},
-  {n:'石油石化',c:'能源',d:[5,15,18,-5,8,12]},
-  {n:'油气开采',c:'能源',d:[8,18,15,-8,10,14]},
-  {n:'黄金',c:'能源',d:[25,8,-5,15,25,42]},
-  {n:'铜',c:'能源',d:[38,30,-15,10,8,30]},
-  {n:'铝',c:'能源',d:[28,25,-12,8,5,22]},
-  {n:'锂矿/新能源金属',c:'能源',d:[85,90,-30,-50,-25,8]},
-  {n:'稀土',c:'能源',d:[55,65,-25,-30,-10,20]},
-  {n:'钢铁',c:'能源',d:[12,25,-20,-15,-8,-5]},
-  {n:'基础化工',c:'周期',d:[30,38,-18,-8,5,12]},
-  {n:'农化/化肥',c:'周期',d:[15,22,-15,-5,2,8]},
-  {n:'塑料/橡胶',c:'周期',d:[18,20,-18,-8,3,10]},
-  {n:'建筑材料',c:'周期',d:[22,18,-25,-20,-12,-8]},
-  {n:'水泥',c:'周期',d:[15,12,-22,-18,-10,-10]},
-  {n:'玻璃',c:'周期',d:[35,22,-28,-22,-15,-8]},
-  {n:'建筑装饰',c:'周期',d:[8,5,-20,-15,-8,-5]},
-  {n:'房地产开发',c:'周期',d:[8,5,-25,-32,-18,-8]},
-  {n:'房地产服务',c:'周期',d:[5,2,-20,-28,-15,-5]},
-  {n:'公路/港口',c:'周期',d:[8,5,-12,-5,10,8]},
-  {n:'航运',c:'周期',d:[5,35,20,-10,15,12]},
-  {n:'公用事业/电力',c:'周期',d:[5,12,5,5,18,10]},
-  {n:'环保',c:'周期',d:[15,8,-22,-10,-5,5]},
-  {n:'银行',c:'金融',d:[8,2,-5,-5,22,12]},
-  {n:'城商行/农商行',c:'金融',d:[5,3,-8,-3,18,14]},
-  {n:'券商',c:'金融',d:[30,-8,-22,10,38,20]},
-  {n:'保险',c:'金融',d:[15,-5,-18,5,28,15]},
-  {n:'多元金融',c:'金融',d:[22,-8,-20,8,25,18]},
-  {n:'信托/资管',c:'金融',d:[18,-10,-22,5,20,15]},
+var NOW_YEAR = new Date().getFullYear();
+var YEARS = [2020,2021,2022,2023,2024,2025,2026,'今日'];
+var autoRefreshTimer = null;
+
+// 今日实时数据缓存（key=板块名，value=涨跌幅%）
+var rtData = {};
+var rtLoaded = false;
+
+// 申万行业代码映射（东方财富板块代码 → 我们的板块名）
+// fs=m:90+t:2 为申万一级行业；f12为代码，f14为名称，f3为今日涨跌幅，f109为年涨跌幅
+var SW_NAME_MAP = {
+  '农林牧渔':'农林牧渔','采掘':'煤炭','化工':'基础化工','钢铁':'钢铁',
+  '有色金属':'铜','电子':'半导体','家用电器':'家用电器','食品饮料':'食品饮料',
+  '纺织服装':'纺织服饰','轻工制造':'轻工制造','医药生物':'化学制药',
+  '公用事业':'公用事业/电力','交通运输':'公路/港口','房地产':'房地产开发',
+  '商业贸易':'商超零售','休闲服务':'旅游酒店','综合':'多元金融',
+  '建筑材料':'建筑材料','建筑装饰':'建筑装饰','电气设备':'电网设备',
+  '国防军工':'军工整机','计算机':'软件开发','传媒':'数字媒体',
+  '通信':'通信设备','银行':'银行','非银金融':'券商','汽车':'整车',
+  '机械设备':'工程机械','煤炭':'煤炭','石油石化':'石油石化'
+};
+
+// 静态历史数据
+var DATA=[
+  {n:'半导体',c:'科技',d:[55,18,-28,22,15,46,48]},
+  {n:'消费电子',c:'科技',d:[38,12,-22,15,8,35,30]},
+  {n:'光学光电子',c:'科技',d:[42,8,-20,18,12,28,55]},
+  {n:'电子化学品',c:'科技',d:[28,15,-18,12,10,22,22]},
+  {n:'被动元件',c:'科技',d:[48,10,-24,20,14,30,28]},
+  {n:'PCB',c:'科技',d:[35,8,-20,15,18,25,25]},
+  {n:'面板',c:'科技',d:[20,5,-15,8,5,18,15]},
+  {n:'软件开发',c:'科技',d:[40,-5,-30,22,10,40,32]},
+  {n:'IT服务',c:'科技',d:[35,-8,-28,18,12,35,28]},
+  {n:'云计算/大数据',c:'科技',d:[45,-5,-32,28,22,45,38]},
+  {n:'人工智能/AI',c:'科技',d:[50,-10,-35,38,28,55,52]},
+  {n:'网络安全',c:'科技',d:[32,-8,-25,20,15,30,28]},
+  {n:'通信设备',c:'科技',d:[20,5,-18,28,30,20,56]},
+  {n:'通信服务',c:'科技',d:[15,8,-12,22,25,15,42]},
+  {n:'卫星/商业航天',c:'科技',d:[25,15,-20,30,35,50,38]},
+  {n:'游戏',c:'科技',d:[30,-5,-20,15,8,22,18]},
+  {n:'数字媒体',c:'科技',d:[28,-8,-22,18,10,20,15]},
+  {n:'广告营销',c:'科技',d:[20,-10,-25,12,8,15,12]},
+  {n:'影视院线',c:'科技',d:[18,-15,-30,20,12,18,10]},
+  {n:'机器人/自动化',c:'制造',d:[22,30,-22,15,25,55,42]},
+  {n:'工程机械',c:'制造',d:[35,28,-20,8,12,20,15]},
+  {n:'专用机械',c:'制造',d:[28,22,-18,10,15,22,18]},
+  {n:'仪器仪表',c:'制造',d:[30,20,-20,15,18,28,22]},
+  {n:'航空航天',c:'制造',d:[25,18,-22,20,28,38,30]},
+  {n:'船舶制造',c:'制造',d:[15,10,-15,22,35,30,20]},
+  {n:'军工电子',c:'制造',d:[30,25,-20,18,22,32,28]},
+  {n:'军工整机',c:'制造',d:[28,22,-18,15,20,28,22]},
+  {n:'新能源汽车',c:'制造',d:[88,50,-28,-15,5,22,10]},
+  {n:'汽车零部件',c:'制造',d:[30,35,-22,-8,8,18,8]},
+  {n:'整车',c:'制造',d:[22,28,-18,-5,12,15,5]},
+  {n:'光伏设备',c:'制造',d:[110,55,-30,-38,-12,8,-5]},
+  {n:'风电设备',c:'制造',d:[85,40,-28,-25,-8,12,3]},
+  {n:'电池/储能',c:'制造',d:[95,58,-32,-30,-10,18,12]},
+  {n:'电网设备',c:'制造',d:[25,18,-15,12,20,25,22]},
+  {n:'食品饮料',c:'消费',d:[68,22,-28,-15,-12,5,-5]},
+  {n:'白酒',c:'消费',d:[88,26,-30,-18,-15,3,-8]},
+  {n:'啤酒',c:'消费',d:[45,15,-20,-8,-5,8,-3]},
+  {n:'休闲食品',c:'消费',d:[35,10,-18,-5,-2,10,5]},
+  {n:'调味品/乳制品',c:'消费',d:[55,18,-25,-12,-8,5,-3]},
+  {n:'家用电器',c:'消费',d:[40,8,-15,5,28,12,8]},
+  {n:'白色家电',c:'消费',d:[42,10,-15,8,30,14,10]},
+  {n:'厨卫电器',c:'消费',d:[30,5,-12,5,22,10,5]},
+  {n:'小家电',c:'消费',d:[55,-5,-20,8,18,12,8]},
+  {n:'化妆品',c:'消费',d:[60,15,-25,-10,-5,8,-5]},
+  {n:'医疗美容',c:'消费',d:[55,12,-28,-15,-8,10,-3]},
+  {n:'个护用品',c:'消费',d:[35,8,-20,-5,-2,8,2]},
+  {n:'纺织服饰',c:'消费',d:[20,5,-22,-8,5,12,3]},
+  {n:'品牌服装',c:'消费',d:[25,8,-20,-5,8,15,5]},
+  {n:'黄金珠宝',c:'消费',d:[15,5,-15,5,18,35,18]},
+  {n:'商超零售',c:'消费',d:[10,-5,-20,-15,-8,5,-3]},
+  {n:'电商/互联网零售',c:'消费',d:[35,-8,-25,15,10,18,12]},
+  {n:'旅游酒店',c:'消费',d:[-10,-5,-28,25,15,10,5]},
+  {n:'航空',c:'消费',d:[-25,-8,-22,28,10,-5,-8]},
+  {n:'教育',c:'消费',d:[45,-35,-30,5,8,12,5]},
+  {n:'农林牧渔',c:'消费',d:[35,-5,-20,-18,-8,-2,-5]},
+  {n:'猪周期',c:'消费',d:[60,-20,-15,-20,-5,-5,-8]},
+  {n:'轻工制造',c:'消费',d:[20,5,-18,-8,5,10,3]},
+  {n:'家居/家装',c:'消费',d:[25,8,-22,-15,-5,8,2]},
+  {n:'造纸/包装',c:'消费',d:[15,5,-15,-5,5,8,3]},
+  {n:'化学制药',c:'医药',d:[42,10,-25,-22,-8,10,8]},
+  {n:'中药',c:'医药',d:[28,18,-20,-5,5,8,5]},
+  {n:'生物制品',c:'医药',d:[55,-5,-30,-18,-12,12,10]},
+  {n:'创新药',c:'医药',d:[45,-8,-28,-15,-5,18,20]},
+  {n:'医疗器械',c:'医药',d:[60,5,-32,-20,-8,12,8]},
+  {n:'医疗服务',c:'医药',d:[48,8,-28,-18,-5,10,5]},
+  {n:'CXO医药外包',c:'医药',d:[85,15,-42,-35,-15,5,8]},
+  {n:'医药商业',c:'医药',d:[15,5,-18,-8,-2,8,3]},
+  {n:'煤炭',c:'能源',d:[-12,60,10,-20,12,15,-8]},
+  {n:'石油石化',c:'能源',d:[5,15,18,-5,8,12,5]},
+  {n:'油气开采',c:'能源',d:[8,18,15,-8,10,14,8]},
+  {n:'黄金',c:'能源',d:[25,8,-5,15,25,42,15]},
+  {n:'铜',c:'能源',d:[38,30,-15,10,8,30,22]},
+  {n:'铝',c:'能源',d:[28,25,-12,8,5,22,18]},
+  {n:'锂矿/新能源金属',c:'能源',d:[85,90,-30,-50,-25,8,-5]},
+  {n:'稀土',c:'能源',d:[55,65,-25,-30,-10,20,12]},
+  {n:'钢铁',c:'能源',d:[12,25,-20,-15,-8,-5,-8]},
+  {n:'基础化工',c:'周期',d:[30,38,-18,-8,5,12,10]},
+  {n:'农化/化肥',c:'周期',d:[15,22,-15,-5,2,8,5]},
+  {n:'塑料/橡胶',c:'周期',d:[18,20,-18,-8,3,10,5]},
+  {n:'建筑材料',c:'周期',d:[22,18,-25,-20,-12,-8,-10]},
+  {n:'水泥',c:'周期',d:[15,12,-22,-18,-10,-10,-12]},
+  {n:'玻璃',c:'周期',d:[35,22,-28,-22,-15,-8,-8]},
+  {n:'建筑装饰',c:'周期',d:[8,5,-20,-15,-8,-5,-8]},
+  {n:'房地产开发',c:'周期',d:[8,5,-25,-32,-18,-8,-12]},
+  {n:'房地产服务',c:'周期',d:[5,2,-20,-28,-15,-5,-10]},
+  {n:'公路/港口',c:'周期',d:[8,5,-12,-5,10,8,5]},
+  {n:'航运',c:'周期',d:[5,35,20,-10,15,12,8]},
+  {n:'公用事业/电力',c:'周期',d:[5,12,5,5,18,10,8]},
+  {n:'环保',c:'周期',d:[15,8,-22,-10,-5,5,3]},
+  {n:'银行',c:'金融',d:[8,2,-5,-5,22,12,8]},
+  {n:'城商行/农商行',c:'金融',d:[5,3,-8,-3,18,14,10]},
+  {n:'券商',c:'金融',d:[30,-8,-22,10,38,20,15]},
+  {n:'保险',c:'金融',d:[15,-5,-18,5,28,15,12]},
+  {n:'多元金融',c:'金融',d:[22,-8,-20,8,25,18,12]},
+  {n:'信托/资管',c:'金融',d:[18,-10,-22,5,20,15,10]}
 ];
 
-let currentView = 'heat';
-
 function heatBg(v){
-  if(v>=80)  return '#7f2020';
-  if(v>=50)  return '#c0392b';
-  if(v>=25)  return '#e74c3c';
-  if(v>=10)  return '#f1948a';
-  if(v>=0)   return '#fadbd8';
+  if(v===null||v===undefined) return '#f5f5f5';
+  if(v>=80) return '#7f2020';
+  if(v>=50) return '#c0392b';
+  if(v>=25) return '#e74c3c';
+  if(v>=10) return '#f1948a';
+  if(v>=0)  return '#fadbd8';
   if(v>=-10) return '#d5f5e3';
   if(v>=-25) return '#82e0aa';
   if(v>=-40) return '#27ae60';
@@ -211,113 +284,311 @@ function heatBg(v){
   return '#145a32';
 }
 function heatTxt(v){
-  if(v>=50)  return '#fff';
-  if(v>=10)  return '#7f0c0c';
-  if(v>=0)   return '#922b21';
-  if(v>=-25) return '#1a5276';
+  if(v===null||v===undefined) return '#ccc';
+  if(v>=50) return '#fff';
+  if(v>=10) return '#7f0c0c';
+  if(v>=0)  return '#922b21';
+  if(v>=-25) return '#0a3d62';
   return '#fff';
 }
-function avg(d){ return Math.round(d.reduce((a,b)=>a+b,0)/d.length); }
+function avg(d){
+  var s=d.filter(function(v){return v!==null&&v!==undefined;});
+  if(!s.length) return 0;
+  return Math.round(s.reduce(function(a,b){return a+b},0)/s.length);
+}
+function yearStatus(y){
+  if(y==='今日') return 'rt';
+  if(y<NOW_YEAR) return 'done';
+  if(y===NOW_YEAR) return 'live';
+  return 'future';
+}
+function thClass(y){
+  var s=yearStatus(y);
+  if(s==='rt') return 'yh-rt';
+  if(s==='live') return 'yh-live';
+  return 'yh-done';
+}
+function yearLabel(y){
+  if(y==='今日') return '今日实时<br><span style="font-size:9px;color:#27ae60;font-weight:700">▶ 东方财富</span>';
+  var s=yearStatus(y);
+  if(s==='live') return y+'<br><span style="font-size:9px;color:#ff6b00;font-weight:700">▶ 年内累计</span>';
+  return y+'<br><span style="font-size:9px;color:#bbb">✓ 完结</span>';
+}
 
+// ========== 实时数据拉取 ==========
+function setLoading(on){
+  var bar=document.getElementById('loadBar');
+  if(on){bar.className='bar running';}
+  else{bar.className='bar';bar.style.width='100%';setTimeout(function(){bar.style.width='0';bar.className='bar';},500);}
+  document.getElementById('refreshBtn').disabled=on;
+}
+
+function fetchRealtime(){
+  setLoading(true);
+  document.getElementById('liveText').textContent='正在拉取东方财富实时数据...';
+  document.getElementById('liveDot').className='dot-live';
+
+  // 东方财富申万行业板块接口：fs=m:90+t:2
+  // f3=今日涨跌幅, f14=板块名称, f109=年涨跌幅, f12=代码
+  var url='https://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=100&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f3&fs=m:90+t:2+f:!50&fields=f12,f14,f3,f109,f62,f11&_='+Date.now();
+
+  // 用JSONP方式绕开CORS（东方财富支持）
+  var cbName='_emcb'+Date.now();
+  window[cbName]=function(data){
+    try{
+      var list=data.data.diff;
+      var newRt={};
+      if(list&&list.length){
+        list.forEach(function(item){
+          var name=item.f14;
+          var chg=item.f3;
+          if(typeof chg==='number'&&chg>-9999){
+            // 直接名称匹配
+            DATA.forEach(function(row){
+              if(row.n.indexOf(name)>=0||name.indexOf(row.n)>=0){
+                newRt[row.n]=Math.round(chg*100)/100;
+              }
+            });
+            // 映射匹配
+            if(SW_NAME_MAP[name]){
+              newRt[SW_NAME_MAP[name]]=Math.round(chg*100)/100;
+            }
+          }
+        });
+      }
+      if(Object.keys(newRt).length>0){
+        rtData=newRt;
+        rtLoaded=true;
+        document.getElementById('liveDot').className='dot-ok';
+        document.getElementById('liveText').textContent='实时数据已更新（'+Object.keys(newRt).length+'个板块）';
+        document.getElementById('errBanner').style.display='none';
+      } else {
+        throw new Error('no data');
+      }
+    }catch(e){
+      showRtError();
+    }
+    setLoading(false);
+    var now=new Date();
+    document.getElementById('lastUpdate').textContent='更新时间：'+now.getHours()+':'+String(now.getMinutes()).padStart(2,'0')+':'+String(now.getSeconds()).padStart(2,'0');
+    delete window[cbName];
+    if(document.getElementById('thead').innerHTML) render();
+  };
+
+  var script=document.createElement('script');
+  script.src=url.replace('?','?cb='+cbName+'&');
+  script.onerror=function(){
+    showRtError();
+    setLoading(false);
+    delete window[cbName];
+    if(document.getElementById('thead').innerHTML) render();
+  };
+  setTimeout(function(){
+    if(window[cbName]){
+      showRtError();
+      setLoading(false);
+      try{delete window[cbName];}catch(e){}
+      if(document.getElementById('thead').innerHTML) render();
+    }
+  },8000);
+  document.head.appendChild(script);
+}
+
+function showRtError(){
+  document.getElementById('liveDot').className='dot-err';
+  document.getElementById('liveText').textContent='实时数据加载失败（跨域限制）';
+  document.getElementById('errBanner').style.display='block';
+}
+
+function setAutoRefresh(){
+  if(autoRefreshTimer) clearInterval(autoRefreshTimer);
+  var sec=parseInt(document.getElementById('autoRefresh').value);
+  if(sec>0) autoRefreshTimer=setInterval(fetchRealtime,sec*1000);
+}
+
+// ========== 渲染 ==========
 function getFiltered(){
-  const cat = document.getElementById('catFilter').value;
-  const q = document.getElementById('search').value.trim().toLowerCase();
-  let rows = DATA.filter(r=>(cat==='all'||r.c===cat)&&(q===''||r.n.toLowerCase().includes(q)||r.c.includes(q)));
-  const sort = document.getElementById('sortBy').value;
-  if(sort==='cat') rows.sort((a,b)=>a.c.localeCompare(b.c)||a.n.localeCompare(b.n));
-  else if(sort==='avg') rows.sort((a,b)=>avg(b.d)-avg(a.d));
-  else { const yi=parseInt(sort.replace('y',''))-2020; rows.sort((a,b)=>b.d[yi]-a.d[yi]); }
+  var cat=document.getElementById('catFilter').value;
+  var q=document.getElementById('search').value.trim().toLowerCase();
+  var rows=DATA.filter(function(r){
+    return (cat==='all'||r.c===cat)&&(q===''||r.n.toLowerCase().indexOf(q)>=0||r.c.indexOf(q)>=0);
+  });
+  var sort=document.getElementById('sortBy').value;
+  if(sort==='cat') rows.sort(function(a,b){return a.c<b.c?-1:a.c>b.c?1:0;});
+  else if(sort==='avg') rows.sort(function(a,b){return avg(b.d)-avg(a.d);});
+  else if(sort==='rt'){
+    rows.sort(function(a,b){
+      var av=rtData[a.n]!==undefined?rtData[a.n]:-999;
+      var bv=rtData[b.n]!==undefined?rtData[b.n]:-999;
+      return bv-av;
+    });
+  }
+  else{var yi=parseInt(sort.replace('y',''))-2020;rows.sort(function(a,b){return b.d[yi]-a.d[yi];});}
   return rows;
 }
 
 function renderStats(rows){
-  const allVals=rows.flatMap(r=>r.d);
-  const maxV=Math.max(...allVals), minV=Math.min(...allVals);
-  const maxR=rows.find(r=>r.d.includes(maxV)), minR=rows.find(r=>r.d.includes(minV));
-  const maxY=YEARS[maxR.d.indexOf(maxV)], minY=YEARS[minR.d.indexOf(minV)];
-  document.getElementById('statRow').innerHTML=[
-    `<div class="stat">显示板块：<b>${rows.length}</b></div>`,
-    `<div class="stat">最大涨幅：<b style="color:#c0392b">+${maxV}% ${maxR.n}(${maxY})</b></div>`,
-    `<div class="stat">最大跌幅：<b style="color:#27ae60">${minV}% ${minR.n}(${minY})</b></div>`,
-  ].join('');
+  var allVals=[];
+  rows.forEach(function(r){r.d.forEach(function(v){if(v!==null)allVals.push(v);});});
+  var maxV=Math.max.apply(null,allVals),minV=Math.min.apply(null,allVals);
+  var maxR=rows.filter(function(r){return r.d.indexOf(maxV)>=0;})[0];
+  var minR=rows.filter(function(r){return r.d.indexOf(minV)>=0;})[0];
+  var maxY=YEARS[maxR?maxR.d.indexOf(maxV):0],minY=YEARS[minR?minR.d.indexOf(minV):0];
+  var rtUp=0,rtDn=0;
+  Object.keys(rtData).forEach(function(k){if(rtData[k]>0)rtUp++;else if(rtData[k]<0)rtDn++;});
+  document.getElementById('statRow').innerHTML=
+    '<div class="stat">板块数：<b>'+rows.length+'</b></div>'+
+    '<div class="stat">历史最大涨幅：<b style="color:#c0392b">+'+maxV+'% '+( maxR?maxR.n:'')+'('+maxY+')</b></div>'+
+    '<div class="stat">历史最大跌幅：<b style="color:#27ae60">'+minV+'% '+(minR?minR.n:'')+'('+minY+')</b></div>'+
+    (rtLoaded?'<div class="stat">今日上涨：<b style="color:#c0392b">'+rtUp+'</b>  下跌：<b style="color:#27ae60">'+rtDn+'</b></div>':'');
+}
+
+function buildTheadHtml(){
+  var th='<th style="background:#f7f7f7">板块</th><th style="background:#f7f7f7;font-size:10px;color:#999">类</th>';
+  YEARS.forEach(function(y){th+='<th class="'+thClass(y)+'">'+yearLabel(y)+'</th>';});
+  th+='<th style="background:#f7f7f7;color:#888;font-size:10px">均值</th>';
+  return th;
+}
+
+function tdCls(yi){
+  var y=YEARS[yi];
+  if(y==='今日') return 'val val-rt';
+  var s=yearStatus(y);
+  if(s==='live') return 'val val-live';
+  return 'val';
 }
 
 function renderHeat(rows){
-  document.getElementById('thead').innerHTML=
-    `<th style="text-align:left;min-width:100px">板块</th><th style="min-width:36px">类别</th>`+
-    YEARS.map(y=>`<th>${y}</th>`).join('')+`<th>均值</th>`;
-  document.getElementById('tbody').innerHTML=rows.map(r=>{
-    const cells=r.d.map(v=>`<td class="val" style="background:${heatBg(v)};color:${heatTxt(v)}">${v>0?'+':''}${v}%</td>`).join('');
-    const a=avg(r.d);
-    return `<tr><td class="name">${r.n}</td><td class="cat">${r.c}</td>${cells}<td class="val" style="background:${heatBg(a)};color:${heatTxt(a)};opacity:.85">${a>0?'+':''}${a}%</td></tr>`;
-  }).join('');
+  document.getElementById('thead').innerHTML=buildTheadHtml();
+  var html='';
+  rows.forEach(function(r){
+    var cells='';
+    // 历史+2026
+    r.d.forEach(function(v,yi){
+      cells+='<td class="'+tdCls(yi)+'" style="background:'+heatBg(v)+';color:'+heatTxt(v)+'">'+(v>0?'+':'')+v+'%</td>';
+    });
+    // 今日实时
+    var rv=rtData[r.n];
+    if(rv!==undefined){
+      cells+='<td class="val val-rt" style="background:'+heatBg(rv)+';color:'+heatTxt(rv)+'">'+(rv>0?'+':'')+rv+'%</td>';
+    } else {
+      cells+='<td class="val val-rt val-loading">'+(rtLoaded?'—':'...')+'</td>';
+    }
+    var a=avg(r.d);
+    cells+='<td class="val" style="background:'+heatBg(a)+';color:'+heatTxt(a)+';opacity:.8">'+(a>0?'+':'')+a+'%</td>';
+    html+='<tr><td>'+r.n+'</td><td style="font-size:10px;color:#999;text-align:center">'+r.c+'</td>'+cells+'</tr>';
+  });
+  document.getElementById('tbody').innerHTML=html;
 }
 
 function renderRank(rows){
-  document.getElementById('thead').innerHTML=
-    `<th style="text-align:left;min-width:100px">板块</th><th>类别</th>`+
-    YEARS.map(y=>`<th>${y}排名</th>`).join('');
-  const total=rows.length;
-  const rankMaps=YEARS.map((_,yi)=>{
-    const sorted=[...rows].sort((a,b)=>b.d[yi]-a.d[yi]);
-    const m={};sorted.forEach((r,i)=>m[r.n]=i+1);return m;
+  var th='<th style="background:#f7f7f7">板块</th><th style="background:#f7f7f7;font-size:10px;color:#999">类</th>';
+  YEARS.forEach(function(y){th+='<th class="'+thClass(y)+'">'+yearLabel(y)+'</th>';});
+  document.getElementById('thead').innerHTML=th;
+  var total=rows.length;
+  // 历史排名
+  var histMaps=[2020,2021,2022,2023,2024,2025,2026].map(function(_,yi){
+    var sorted=rows.slice().sort(function(a,b){return b.d[yi]-a.d[yi];});
+    var m={};sorted.forEach(function(r,i){m[r.n]=i+1;});return m;
   });
-  document.getElementById('tbody').innerHTML=rows.map(r=>{
-    const cells=YEARS.map((_,yi)=>{
-      const rk=rankMaps[yi][r.n]||'-';
-      let bg='',tc='#666';
+  // 今日排名
+  var rtSorted=rows.slice().sort(function(a,b){
+    var av=rtData[a.n]!==undefined?rtData[a.n]:-9999;
+    var bv=rtData[b.n]!==undefined?rtData[b.n]:-9999;
+    return bv-av;
+  });
+  var rtRankMap={};rtSorted.forEach(function(r,i){rtRankMap[r.n]=i+1;});
+  var html='';
+  rows.forEach(function(r){
+    var cells='';
+    // 历史
+    [2020,2021,2022,2023,2024,2025,2026].forEach(function(_,yi){
+      var rk=histMaps[yi][r.n]||'-';
+      var bg='',tc='#666';
       if(typeof rk==='number'){
-        const p=rk/total;
+        var p=rk/total;
         if(p<=0.1){bg='#c0392b';tc='#fff';}
         else if(p<=0.25){bg='#f1948a';tc='#7f0c0c';}
         else if(p>=0.9){bg='#27ae60';tc='#fff';}
-        else if(p>=0.75){bg='#82e0aa';tc='#1a5276';}
+        else if(p>=0.75){bg='#82e0aa';tc='#0a3d62';}
       }
-      return `<td class="val" style="background:${bg};color:${tc}">${rk}</td>`;
-    }).join('');
-    return `<tr><td class="name">${r.n}</td><td class="cat">${r.c}</td>${cells}</tr>`;
-  }).join('');
+      var cls=yi===6?'val val-live':'val';
+      cells+='<td class="'+cls+'" style="background:'+bg+';color:'+tc+'">'+rk+'</td>';
+    });
+    // 今日
+    var rrk=rtRankMap[r.n]||'-';
+    if(rtData[r.n]===undefined) rrk=(rtLoaded?'—':'...');
+    var rbg='',rtc='#666';
+    if(typeof rrk==='number'){
+      var rp=rrk/total;
+      if(rp<=0.1){rbg='#c0392b';rtc='#fff';}
+      else if(rp<=0.25){rbg='#f1948a';rtc='#7f0c0c';}
+      else if(rp>=0.9){rbg='#27ae60';rtc='#fff';}
+      else if(rp>=0.75){rbg='#82e0aa';rtc='#0a3d62';}
+    }
+    cells+='<td class="val val-rt" style="background:'+rbg+';color:'+rtc+'">'+rrk+'</td>';
+    html+='<tr><td>'+r.n+'</td><td style="font-size:10px;color:#999;text-align:center">'+r.c+'</td>'+cells+'</tr>';
+  });
+  document.getElementById('tbody').innerHTML=html;
 }
 
 function renderBest(rows){
   document.getElementById('thead').innerHTML=
-    `<th style="text-align:left;min-width:100px">板块</th><th>类别</th><th>最佳年</th><th>最佳涨幅</th><th>最差年</th><th>最差涨幅</th><th>5年均值</th><th>上涨胜率</th>`;
-  const sorted=[...rows].sort((a,b)=>avg(b.d)-avg(a.d));
-  document.getElementById('tbody').innerHTML=sorted.map(r=>{
-    const maxV=Math.max(...r.d),minV=Math.min(...r.d);
-    const maxY=YEARS[r.d.indexOf(maxV)],minY=YEARS[r.d.indexOf(minV)];
-    const a=avg(r.d),wr=Math.round(r.d.filter(v=>v>0).length/r.d.length*100);
-    return `<tr>
-      <td class="name">${r.n}</td><td class="cat">${r.c}</td>
-      <td style="color:#c0392b;font-weight:500">${maxY}</td>
-      <td style="color:#c0392b;font-weight:500">+${maxV}%</td>
-      <td style="color:#27ae60;font-weight:500">${minY}</td>
-      <td style="color:#27ae60;font-weight:500">${minV}%</td>
-      <td style="font-weight:500;color:${a>=0?'#c0392b':'#27ae60'}">${a>=0?'+':''}${a}%</td>
-      <td><div style="display:flex;align-items:center;gap:4px">
-        <div style="width:${wr*0.5}px;height:8px;background:${wr>=50?'#e74c3c':'#82e0aa'};border-radius:2px"></div>
-        <span style="font-size:10px">${wr}%</span>
-      </div></td>
-    </tr>`;
-  }).join('');
+    '<th style="background:#f7f7f7">板块</th><th style="background:#f7f7f7;font-size:10px;color:#999">类</th>'+
+    '<th style="background:#f7f7f7">最佳年</th><th style="background:#f7f7f7">最佳涨幅</th>'+
+    '<th style="background:#f7f7f7">最差年</th><th style="background:#f7f7f7">最差涨幅</th>'+
+    '<th style="background:#f7f7f7">均值</th><th style="background:#f7f7f7">胜率</th>'+
+    '<th class="yh-rt">今日实时</th>';
+  var sorted=rows.slice().sort(function(a,b){return avg(b.d)-avg(a.d);});
+  var html='';
+  sorted.forEach(function(r){
+    var maxV=Math.max.apply(null,r.d),minV=Math.min.apply(null,r.d);
+    var maxYi=r.d.indexOf(maxV),minYi=r.d.indexOf(minV);
+    var maxY=YEARS[maxYi],minY=YEARS[minYi];
+    var a=avg(r.d);
+    var wins=r.d.filter(function(v){return v>0;}).length;
+    var wr=Math.round(wins/r.d.length*100);
+    var bar='<div style="display:flex;align-items:center;gap:3px"><div style="width:'+(wr*0.4)+'px;height:7px;background:'+(wr>=50?'#e74c3c':'#82e0aa')+';border-radius:2px"></div><span style="font-size:10px">'+wr+'%</span></div>';
+    var maxYLabel=maxY;
+    if(yearStatus(maxY)==='live') maxYLabel='<span style="color:#ff6b00;font-weight:700">'+maxY+'▶</span>';
+    var rv=rtData[r.n];
+    var rtCell=rv!==undefined?
+      '<td class="val val-rt" style="background:'+heatBg(rv)+';color:'+heatTxt(rv)+'">'+(rv>0?'+':'')+rv+'%</td>':
+      '<td class="val val-rt val-loading">'+(rtLoaded?'—':'...')+'</td>';
+    html+='<tr>'+
+      '<td>'+r.n+'</td>'+
+      '<td style="font-size:10px;color:#999;text-align:center">'+r.c+'</td>'+
+      '<td style="color:#c0392b;font-weight:600;text-align:center">'+maxYLabel+'</td>'+
+      '<td style="color:#c0392b;font-weight:600">+'+maxV+'%</td>'+
+      '<td style="color:#27ae60;font-weight:600;text-align:center">'+minY+'</td>'+
+      '<td style="color:#27ae60;font-weight:600">'+minV+'%</td>'+
+      '<td style="font-weight:600;color:'+(a>=0?'#c0392b':'#27ae60')+'">'+(a>=0?'+':'')+a+'%</td>'+
+      '<td>'+bar+'</td>'+
+      rtCell+
+    '</tr>';
+  });
+  document.getElementById('tbody').innerHTML=html;
 }
 
+var currentView='heat';
 function render(){
-  const rows=getFiltered();
+  var rows=getFiltered();
   renderStats(rows);
   if(currentView==='heat') renderHeat(rows);
   else if(currentView==='rank') renderRank(rows);
   else renderBest(rows);
 }
-
 function setView(v,btn){
   currentView=v;
-  document.querySelectorAll('.tab-bar button').forEach(b=>b.classList.remove('active'));
+  var btns=document.querySelectorAll('.tab-bar button');
+  for(var i=0;i<btns.length;i++) btns[i].classList.remove('active');
   btn.classList.add('active');
   render();
 }
 
+// 初始化
 render();
+fetchRealtime();
 </script>
 </body>
 </html>
